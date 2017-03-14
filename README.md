@@ -7,9 +7,8 @@ BeagleBone Black UART library
 
 - Dependency : the readBuffer output is stored in arrays as follows
 
+        - You must have these variables in your project to use the respective UART.
         - extern char uartReadBuffer0[255], uartReadBuffer1[255], uartReadBuffer2[255], uartReadBuffer3[255], uartReadBuffer4[255];
-        
-        -You must have these variables in your project to use the respective UART.
 
 # Initialization:
 
