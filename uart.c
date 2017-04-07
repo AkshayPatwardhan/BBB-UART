@@ -1,21 +1,77 @@
-#include "uart.h"
+/* Library designed by : Akshay Patwardhan
+ * email : akshay.patwardhan@outlook.com
+ */
 
-#define BONEPATH	"/sys/devices/bone_capemgr.8/slots"
+#include uart.h
+
+// Beaglebone Black UART defines and global variables start
+#define BONEPATH	"/sys/devices/bone_capemgr.9/slots"
 
 //UART config using termios
 struct termios uartTermios,oldDescriptor;
 int fileDescriptor0, fileDescriptor1, fileDescriptor2, fileDescriptor3, fileDescriptor4;
 extern char uartReadBuffer0[255], uartReadBuffer1[255], uartReadBuffer2[255], uartReadBuffer3[255], uartReadBuffer4[255];
 
-/*
- * Usage: uartInit(4,9600); - Initialize UART4 with Baudrate 9600
- *
- * Send Data: uartWriteByte('A'); - Send a single character on uartDeinit()
- *
- * Receive Data: uartRead(); - Read the UART buffer and store it in an array
-*/
+// Beaglebone Black UART defines and global variables end
 
-int uartInitialize(int uartNumber, int baudRate)
+/*
+ * Beaglebone Black UART Functions
+ *
+ * Usage:
+ *
+ * unsigned char uartInitialize(int uartNumber, int baudRate)
+ *  - Initializes a specific UART peripheral with given baudrate
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *                      int baudRate - UART baudrate
+ *                                     - Valid values - 1200, 1800, 2400, 4800, 9600, 19200, 38400
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *                      UART_BAUDRATE_INCORRECT - UART baudrate entered is incorrect
+ *
+ *  unsigned char uartDeinit(int uartNumber)
+ *  - Deinitializes UART peripheral
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *
+ *  unsigned char uartWriteByte(int uartNumber, unsigned char uwb)
+ *  - Write a single byte to UART
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *                      unsigned char uwb - Byte to be written to UART
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *
+ *  unsigned char uartWriteLine(int uartNumber, unsigned char uwl[])
+ *  - Write a byte array to UART
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *                      unsigned char[] uwl - Byte array to be written to UART
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *                      UART_FIFO_ERROR - Character array passed has exceeds Transmit FIFO size
+ *
+ *  unsigned char uartRead(int uartNumber)
+ *  - UART Receive FIFO is copied into the global array uartReadBufferX
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *
+ *  unsigned char uartWaitTillTxComplete(int uartNumber)
+ *  - Wait till UART transmission is complete.
+ *  - Input param   :   int uartNumber - UART number to initialize.
+ *                                     - Valid values - 0 to 4
+ *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
+ *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
+ *
+ */
+
+//  Beaglebone Black UART functions start
+
+unsigned char uartInitialize(int uartNumber, int baudRate)
 {
     FILE *uart;
     char buf[11] = "/dev/tty";
@@ -51,7 +107,7 @@ int uartInitialize(int uartNumber, int baudRate)
             break;
         default:
             printf("Uart modules are 0-4\n");
-            return 1;
+            return UART_NUMBER_INCORRECT;
     }
     fflush(uart);
     fclose(uart);
@@ -90,13 +146,12 @@ int uartInitialize(int uartNumber, int baudRate)
             break;
         default:
             printf("Incorrect UART number");
-            return 1;
+            return UART_NUMBER_INCORRECT;
     }
 
     //save current attributes
 //    tcgetattr(fileDescriptor,&oldDescriptor);
     bzero(&uartTermios,sizeof(uartTermios));
-
     switch(baudRate){
         case 1200:
             baud = B1200;
@@ -121,7 +176,7 @@ int uartInitialize(int uartNumber, int baudRate)
             break;
         default:
             printf("Incorrect baud rate");
-            return 2;
+            return UART_BAUDRATE_INCORRECT;
     }
 
     uartTermios.c_cflag = baud | CS8 | CLOCAL | CREAD;
@@ -156,13 +211,14 @@ int uartInitialize(int uartNumber, int baudRate)
             break;
         default:
             printf("Incorrect UART number");
-            return 1;
+            return UART_NUMBER_INCORRECT;
     }
 
-    return 0;
+    return UART_FUNCTION_SUCCESSFUL;
 }
 
-int uartDeinit(int uartNumber){
+unsigned char uartDeinit(int uartNumber)
+{
     switch(uartNumber){
         case 0:
             close(fileDescriptor0);
@@ -183,10 +239,11 @@ int uartDeinit(int uartNumber){
             printf("Incorrect UART number");
             break;
     }
-    return 0;
+    return UART_FUNCTION_SUCCESSFUL;
 }
 
-int uartWriteByte(int uartNumber, unsigned char uwb){
+unsigned char uartWriteByte(int uartNumber, unsigned char uwb)
+{
     switch(uartNumber){
     case 0:
         write(fileDescriptor0,&uwb,1);
@@ -205,40 +262,45 @@ int uartWriteByte(int uartNumber, unsigned char uwb){
         break;
     default:
         printf("Incorrect UART number");
-        return 1;
+        return UART_NUMBER_INCORRECT;
     }
-    return 0;
+    return UART_FUNCTION_SUCCESSFUL;
 }
 
-int uartWriteLine(int uartNumber, char uwl[])
+unsigned char uartWriteLine(int uartNumber, unsigned char uwl[])
 {
-    int ii;
+    unsigned int ii;
     ii = strlen(uwl);
-    switch(uartNumber){
-    case 0:
-        write(fileDescriptor0,uwl,ii);
-        break;
-    case 1:
-        write(fileDescriptor1,uwl,ii);
-        break;
-    case 2:
-        write(fileDescriptor2,uwl,ii);
-        break;
-    case 3:
-        write(fileDescriptor3,uwl,ii);
-        break;
-    case 4:
-        write(fileDescriptor4,uwl,ii);
-        break;
-    default:
-        printf("Incorrect UART number");
-        return 1;
+    if(strlen > 64){
+        return UART_FIFO_ERROR;
     }
-    return 0;
+    else{
+        switch(uartNumber){
+        case 0:
+            write(fileDescriptor0,uwl,ii);
+            break;
+        case 1:
+            write(fileDescriptor1,uwl,ii);
+            break;
+        case 2:
+            write(fileDescriptor2,uwl,ii);
+            break;
+        case 3:
+            write(fileDescriptor3,uwl,ii);
+            break;
+        case 4:
+            write(fileDescriptor4,uwl,ii);
+            break;
+        default:
+            printf("Incorrect UART number");
+            return UART_NUMBER_INCORRECT;
+        }
+    }
+    return UART_FUNCTION_SUCCESSFUL;
 }
 
-unsigned char uartRead(int uartNumber){
-
+unsigned char uartRead(int uartNumber)
+{
     switch(uartNumber){
     case 0:
         return read(fileDescriptor0,&uartReadBuffer0[0],255);
@@ -257,8 +319,34 @@ unsigned char uartRead(int uartNumber){
         break;
     default:
         printf("Incorrect UART number");
-        return 1;
+        return UART_NUMBER_INCORRECT;
     }
 
-    return 0;
+    return UART_FUNCTION_SUCCESSFUL;
 }
+
+unsigned char uartWaitTillTxComplete(int uartNumber){
+    switch(uartNumber){
+    case 0:
+        tcdrain(fileDescriptor0);
+        break;
+    case 1:
+        tcdrain(fileDescriptor1);
+        break;
+    case 2:
+        tcdrain(fileDescriptor2);
+        break;
+    case 3:
+        tcdrain(fileDescriptor3);
+        break;
+    case 4:
+        tcdrain(fileDescriptor4);
+        break;
+    default:
+        printf("Incorrect UART number");
+        return UART_NUMBER_INCORRECT;
+    }
+    return UART_FUNCTION_SUCCESSFUL;
+}
+
+//  Beaglebone Black UART functions end
