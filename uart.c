@@ -4,15 +4,25 @@
 
 #include uart.h
 
-// Beaglebone Black UART defines and global variables start
+// ----------------Beaglebone Black UART defines and global variables start----------------
+
+// Define the beaglebone black cape. The cape manager may be 8 or 9
 #define BONEPATH	"/sys/devices/bone_capemgr.9/slots"
+//#define BONEPATH	"/sys/devices/bone_capemgr.8/slots"
 
 //UART config using termios
 struct termios uartTermios,oldDescriptor;
-int fileDescriptor0, fileDescriptor1, fileDescriptor2, fileDescriptor3, fileDescriptor4;
-extern char uartReadBuffer0[255], uartReadBuffer1[255], uartReadBuffer2[255], uartReadBuffer3[255], uartReadBuffer4[255];
 
-// Beaglebone Black UART defines and global variables end
+// File descriptors for UART0-4
+int fileDescriptor0, fileDescriptor1, fileDescriptor2, fileDescriptor3, fileDescriptor4;
+
+// This is my implementation of read buffers. In my application, i have set these buffers as global arrays in
+//      my main.c -- so I am referring them here as extern
+// You may use static or define them here or whatever. The important thing is the uartRead will use this precise file
+//      name to store the read data. So change this carefully.
+extern char uartReadBuffer0[64], uartReadBuffer1[64], uartReadBuffer2[64], uartReadBuffer3[64], uartReadBuffer4[64];
+
+// ----------------Beaglebone Black UART defines and global variables end----------------
 
 /*
  * Beaglebone Black UART Functions
@@ -150,6 +160,7 @@ unsigned char uartInitialize(int uartNumber, int baudRate)
     }
 
     //save current attributes
+    // Edit: Removed the line saving old attributes. Not needed usually.
 //    tcgetattr(fileDescriptor,&oldDescriptor);
     bzero(&uartTermios,sizeof(uartTermios));
     switch(baudRate){
@@ -179,6 +190,8 @@ unsigned char uartInitialize(int uartNumber, int baudRate)
             return UART_BAUDRATE_INCORRECT;
     }
 
+    // Choose the control/input/output/local modes for UART operation
+    // I would suggest you read the manual here: http://man7.org/linux/man-pages/man3/termios.3.html
     uartTermios.c_cflag = baud | CS8 | CLOCAL | CREAD;
     uartTermios.c_iflag = IGNPAR | ICRNL | IGNCR;
     uartTermios.c_oflag = 0;
@@ -303,19 +316,19 @@ unsigned char uartRead(int uartNumber)
 {
     switch(uartNumber){
     case 0:
-        return read(fileDescriptor0,&uartReadBuffer0[0],255);
+        return read(fileDescriptor0,&uartReadBuffer0[0],64);
         break;
     case 1:
-        return read(fileDescriptor1,&uartReadBuffer1[0],255);
+        return read(fileDescriptor1,&uartReadBuffer1[0],64);
         break;
     case 2:
-        return read(fileDescriptor2,&uartReadBuffer2[0],255);
+        return read(fileDescriptor2,&uartReadBuffer2[0],64);
         break;
     case 3:
-        return read(fileDescriptor3,&uartReadBuffer3[0],255);
+        return read(fileDescriptor3,&uartReadBuffer3[0],64);
         break;
     case 4:
-        return read(fileDescriptor4,&uartReadBuffer4[0],255);
+        return read(fileDescriptor4,&uartReadBuffer4[0],64);
         break;
     default:
         printf("Incorrect UART number");
