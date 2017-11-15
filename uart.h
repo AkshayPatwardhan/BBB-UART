@@ -15,6 +15,7 @@
 #define UART_NUMBER_INCORRECT           1
 #define UART_BAUDRATE_INCORRECT         2
 #define UART_FIFO_ERROR                 3
+#define UART_INCORRECT_PATH             4
 
 unsigned char uartInitialize(int uartNumber, int baudRate);
 unsigned char uartWriteByte(int uartNumber, unsigned char uwb);
