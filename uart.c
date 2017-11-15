@@ -6,9 +6,11 @@
 
 // ----------------Beaglebone Black UART defines and global variables start----------------
 
+// Added another condition in uartInitialize function to take care of both conditions and 
+// choose whichever cape is present. (Priority given to bone_capemgr.9)
 // Define the beaglebone black cape. The cape manager may be 8 or 9
-#define BONEPATH	"/sys/devices/bone_capemgr.9/slots"
-//#define BONEPATH	"/sys/devices/bone_capemgr.8/slots"
+#define BONEPATH_9	"/sys/devices/bone_capemgr.9/slots"
+#define BONEPATH_8	"/sys/devices/bone_capemgr.8/slots"
 
 //UART config using termios
 struct termios uartTermios,oldDescriptor;
@@ -38,6 +40,7 @@ extern char uartReadBuffer0[64], uartReadBuffer1[64], uartReadBuffer2[64], uartR
  *  - Return param  :   UART_FUNCTION_SUCCESSFUL - Function completed successfully
  *                      UART_NUMBER_INCORRECT - UART number entered is incorrect
  *                      UART_BAUDRATE_INCORRECT - UART baudrate entered is incorrect
+ *                      UART_INCORRECT_PATH - unable to open slots for both bone_capemgr.9 & bone_capemgr.8
  *
  *  unsigned char uartDeinit(int uartNumber)
  *  - Deinitializes UART peripheral
@@ -87,10 +90,16 @@ unsigned char uartInitialize(int uartNumber, int baudRate)
     char buf[11] = "/dev/tty";
     int baud;
 
-    //  Open the slot for UART
-    uart = fopen(BONEPATH, "w");
+    // Open the slot for UART
+    // Try for bone_capemgr.9 first
+    uart = fopen(BONEPATH_9, "w");
     if(uart == NULL){
-        printf("slots didn't open\n");
+        printf("bone_capemgr.9 doesn't exist. Trying bone_capemgr.8");
+        uart = fopen(BONEPATH_8, "w");
+        if(uart == NULL){
+            printf("slots didn't open\n");
+            return UART_INCORRECT_PATH;
+        }
     }
     fseek(uart,0,SEEK_SET);
 
