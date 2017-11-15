@@ -20,6 +20,7 @@ This is a simple BeagleBone Black UART library
 - UART_FUNCTION_SUCCESSFUL - Function completed successfully
 - UART_NUMBER_INCORRECT - UART number entered is incorrect
 - UART_BAUDRATE_INCORRECT - UART baudrate entered is incorrect
+- UART_INCORRECT_PATH - Slots didn't open for both bone_capemgr.9 and bone_capemgr.8
 ## unsigned char uartDeinit(int uartNumber)
 - Deinitializes UART peripheral
 ### Input param   :   
