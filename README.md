@@ -7,7 +7,9 @@ This is a motivator for me, and I might just go ahead and start creating a one-s
 You can contact me at akshay.patwardhan@outlook.com
 
 # BBB-UART
-This is a simple BeagleBone Black UART library aimed at any OS that uses capemgr
+This is a simple BeagleBone Black UART library aimed at any OS that uses capemgr.
+This library uses termios. More information about termios can be found in its man page.
+You can use this wikipedia page for reference as well: https://en.wikibooks.org/wiki/Serial_Programming/termios
 
 - Add the files into your project.
 
@@ -23,7 +25,8 @@ This is a simple BeagleBone Black UART library aimed at any OS that uses capemgr
 - Valid values - 0 to 4
 #### int baudRate 
 - UART baudrate
-- Valid values - 1200, 1800, 2400, 4800, 9600, 19200, 38400
+- Valid values - 1200, 1800, 2400, 4800, 9600, 19200, 38400 ... up to 400000
+- Please refer to termios manpage for the exact values supported.
 ### Return param  :   
 - UART_FUNCTION_SUCCESSFUL - Function completed successfully
 - UART_NUMBER_INCORRECT - UART number entered is incorrect
