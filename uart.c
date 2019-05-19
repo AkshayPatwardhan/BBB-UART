@@ -1,5 +1,5 @@
 /*	
- *	Copyright (C) 2019  Akshay Patwardhan
+ *  Copyright (C) 2019  Akshay Patwardhan
  *  akshay.patwardhan@outlook.com
  *  
  *  Please go through readme.md for usage and other instructions, if any.
