@@ -1,3 +1,11 @@
+# About
+
+I initially created and uploaded this library on github for my own backup and as a reference to my co-workers. Lately, to my surprise, this library has been getting a lot of traction. So I've decided to add GNU GPLv3 so anyone can officially use this in their own projects, public or commercial.
+
+This is a motivator for me, and I might just go ahead and start creating a one-stop-shop libraries for other BBB peripherals as well. Let me know if any of you specifically want me to develop something in my free time.
+
+You can contact me at akshay.patwardhan@outlook.com
+
 # BBB-UART
 This is a simple BeagleBone Black UART library
 
