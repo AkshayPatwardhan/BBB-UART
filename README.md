@@ -7,7 +7,7 @@ This is a motivator for me, and I might just go ahead and start creating a one-s
 You can contact me at akshay.patwardhan@outlook.com
 
 # BBB-UART
-This is a simple BeagleBone Black UART library
+This is a simple BeagleBone Black UART library aimed at any OS that uses capemgr
 
 - Add the files into your project.
 
