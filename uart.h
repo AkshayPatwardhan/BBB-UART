@@ -1,5 +1,5 @@
 /*	
- *  Copyright (C) 2019  Akshay Patwardhan
+ *  Copyright (C) 2022  Akshay Patwardhan
  *  akshay.patwardhan@outlook.com
  *  
  *  Please go through readme.md for usage and other instructions, if any.
@@ -32,6 +32,11 @@
 #include <sys/types.h>
 #include <string.h>
 
+// CPP Guarding macro begin
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Error codes and return values
 #define UART_FUNCTION_SUCCESSFUL        0
 #define UART_NUMBER_INCORRECT           1
@@ -46,6 +51,11 @@ unsigned char uartWriteLine(int uartNumber, unsigned char uwl[]);
 unsigned char uartRead(int uartNumber);
 unsigned char uartWaitTillTxComplete(int uartNumber);
 unsigned char uartDeinit(int uartNumber);
+
+// CPP Guarding macro end
+#ifdef __cplusplus
+}
+#endif
 
 // Guarding macro end
 #endif // UART_H
